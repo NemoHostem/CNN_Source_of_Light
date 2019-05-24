@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri May 24 13:09:52 2019
-Last Modified on Fri May 24 14:02:00 2019
+Last Modified on Fri May 24 14:30:00 2019
 
 @author: Matias Ijäs
 """
 
+import os
 from exif import Image
 
 
 folder = 'C://Users/Matias Ijäs/Documents/Matias/data/exif-gps-samples/exif-gps-samples'
-file = 'DSCN0010.jpg'
 
 
 def read_exif_data(filename):
@@ -60,5 +60,16 @@ def parse_date(item, return_val):
     else:
         return -1
     
-filename = folder + '/' + file
-print(read_exif_data(filename))
+def loop_through_files(folder):
+    for subdir, dirs, files in os.walk(folder):
+        for file in files:
+            if file.endswith('.JPG') or file.endswith('.JPEG') or file.endswith('.PNG'):
+                filename = folder + '/' + file
+                print(read_exif_data(filename))
+
+if os.path.exists(folder):
+    print("Folder found! Looping through contents")
+    loop_through_files(folder)
+    
+else:
+    print("Folder does not exist.")
