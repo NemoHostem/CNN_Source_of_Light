@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun  3 14:14:11 2019
-Last Modified on Mon Jun  3 16:00:11 2019
+Last Modified on Mon Jun  3 16:25:01 2019
 
 @author: Matias Ijäs
 """
 
+import os
 import math
 
 def compute_straight_face_angle(x,y,z):
+    
     radius = 0
     phi = 0
     theta = 0
@@ -20,7 +22,8 @@ def compute_straight_face_angle(x,y,z):
     return radius, phi, theta
 
 
-def compute_complicated_angle(x, y, z, pitch, yaw, roll):
+def compute_complicated_face_angle(x, y, z, pitch, yaw, roll):
+    
     radius = 0
     phi = 0
     theta = 0
@@ -52,3 +55,39 @@ def compute_complicated_angle(x, y, z, pitch, yaw, roll):
 
 def separate_attributes(name):
     
+    mode = -1
+    n = 0
+    x,y,z,pitch,yaw,roll = 0,0,0,0,0,0
+    
+    name.split("_")
+    if name[0] == "test":
+        return mode, n, x, y, z, pitch, yaw, roll
+    elif len(name) == 5:
+        mode, n, x, y, z = name
+    elif len(name) == 8:
+        mode, n, x, y, z, pitch, yaw, roll = name
+
+    return mode, n, x, y, z, pitch, yaw, roll
+
+
+def read_values_from_folder(folder, result_file):
+    
+    with open(result_file, 'rw') as rf:
+        for subdir, dirs, files in os.walk(folder):
+            for file in files:
+                if (not file.beginswith('test')) and (file.endswith('.JPG') or file.endswith('.JPEG') or file.endswith('.PNG')):
+                    filename = folder + '/' + file
+                    mode, n, x, y, z, pitch, yaw, roll = separate_attributes(file)
+                    if mode == -1:
+                        continue
+                    elif mode == 1 or mode == 2:
+                        radius, phi, theta = compute_straight_face_angle(x,y,z)
+                    elif mode == 3:
+                        radius, phi, theta = compute_complicated_face_angle(x, y, z, pitch, yaw, roll)
+                    else:
+                        continue
+                    rf.write(filename, ':', radius, ':', phi, ':', theta, '\n')
+
+                    
+read_values_from_folder('results/facetestset', 'results/data.txt')
+                
