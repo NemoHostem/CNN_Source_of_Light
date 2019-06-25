@@ -3,15 +3,19 @@ This is a project, which consists of convolutional neural networks and finding t
 
 ## Overview
 The code in this project is used for Master of Science thesis of Matias Ijäs.
+
 The project is still in state: ***In progress***
 
 ## Usage
 The software can be used as it is for non-profitable use. The creator of the software does not take any responsibility for possible misuses done with the software or bugs in the software.
+
 It is highly recommended to ask permission to use code: matias.ijas2@gmail.com
 
+### Reference info
 If the code is used in some scientific study, please refer to it as:
 **In text:**
 > (Ijäs, 2019)
+
 **In reference list (Harvard style):**
 > Ijäs, M. 2019, *CNN Source of Light (source code)*, Github, Available: https://github.com/NemoHostem/CNN_Source_of_Light
 
