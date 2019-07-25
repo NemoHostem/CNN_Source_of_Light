@@ -55,6 +55,9 @@ Sprints of 2-3 weeks were used during the period of development phase. These sub
 - Improved the CNN structure and made minor optimizations, such as changed input size to 64x64x3.
 
 ### Sprint 4
+- Created a filtered dataset, which masks images with color intensities
+- Overall testing different saved models
+- Created a visualization part for testing, which visualizes ground truth and estimated value with image
 
 ### Sprint 5
 
