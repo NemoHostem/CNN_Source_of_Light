@@ -2,7 +2,7 @@
 name: Issue report (documentation)
 about: Issue for documentation
 title: 'Write a '
-labels: Documentation, Open, Research, Sprint 3
+labels: Documentation, Open, Research, Sprint 5
 assignees: NemoHostem
 
 ---

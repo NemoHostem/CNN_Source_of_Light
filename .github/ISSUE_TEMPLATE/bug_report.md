@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: 'Bug: '
-labels: Python, Sprint 3, ToDo, bug
+labels: Python, Sprint 5, ToDo, bug
 assignees: NemoHostem
 
 ---
