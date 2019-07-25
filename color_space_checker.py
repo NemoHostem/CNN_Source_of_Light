@@ -7,6 +7,8 @@ Last Modified on TODO
 """
 
 import matplotlib.pyplot as plt
+import os
+from skimage import io
 
 #filename = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facedataset/1_22_166_-165_51.JPG'
 filename = 'C://Users/Matias Ijäs/Documents/Matias/data/exif-gps-samples/exif-gps-samples/DSCN0010.JPG'
@@ -26,7 +28,7 @@ def mask_it(img, mmin, mmax):
     return n_img
 
 # %% Reading a file
-    
+"""    
 img = plt.imread(filename)
 
 # %% First method to find high intensity
@@ -62,12 +64,12 @@ pic_B[:,:,0] = 0
 pic_B[:,:,1] = 0
 
 # Creating masks and showing only high enough intensity and above
-"""
+
 m_img = mask_it(img, 192, 256)
 m_R = mask_it(pic_R, 192, 256)
 m_G = mask_it(pic_G, 192, 256)
 m_B = mask_it(pic_B, 192, 256)
-"""
+
 m_img = mask_it(img, 150, 256)
 m_R = mask_it(pic_R, 150, 256)
 m_G = mask_it(pic_G, 150, 256)
@@ -101,3 +103,34 @@ plt.imshow(m_G)
 plt.subplot(1,2,2)
 plt.imshow(m_B)
 plt.show()
+"""
+
+# %% Reading from file and showing masked image
+
+def read_and_mask_image(filename):
+    img = plt.imread(filename)
+    m_img = mask_it(img, 150, 256)
+    
+    """
+    plt.figure()
+    plt.imshow(m_img)
+    """
+    return m_img
+    
+def read_from_folder(read_folder, save_folder):
+    
+    for subdir, dirs, files in os.walk(read_folder):
+        for file in files:
+            
+            if (file.endswith('.JPG') or file.endswith('.JPEG') or file.endswith('.jpg') or file.endswith('.jpeg')):
+                print(file)
+                filename = read_folder + '/' + file
+                m_img = read_and_mask_image(filename)
+                io.imsave('{}/{}'.format(save_folder, file), m_img)
+                
+save_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train"
+if not os.path.exists(save_folder):
+    os.mkdir(save_folder)
+
+read_from_folder("C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facedataset", save_folder)
+# read_from_folder("C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset", save_folder)
