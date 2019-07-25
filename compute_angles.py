@@ -151,5 +151,5 @@ def read_values_from_folder(folder, result_file):
     rf.close()
 
                     
-read_values_from_folder('C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facedataset', 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/traindata.csv')
+read_values_from_folder('C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test', 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test.csv')
                 
