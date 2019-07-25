@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun  3 10:01:40 2019
-Last Modified on Tue Jun  25 08:22:11 2019
+Created on Mon Jul 15 08:21:40 2019
+Last Modified on Tue Jul 16 08:22:11 2019
 
 @author: Matias Ijäs
 """
 
 # %% Imports
-from keras.models import Sequential, Model
+from keras.models import Sequential, Model, load_model
 from keras.layers import Flatten, Input
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D, MaxPooling2D
@@ -18,6 +18,7 @@ import numpy as np
 import os
 import sys
 import csv
+import math
 from imageio import imread
 from skimage.transform import rescale
 import matplotlib.pyplot as plt
@@ -30,20 +31,22 @@ np.random.seed(8)
 
 print("Setting variables.")
 
-train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facedataset'
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset'
-train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/traindata.csv'
-test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/testdata.csv'
+train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset'#face_test'
+val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val'
+train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train.csv'
+test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/testdata.csv'#face_test.csv'
+val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-model_name = 'keras_light_direction_regr_model10.h5'
+model_name = 'keras_regr_model3.h5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
-epochs = 30
+epochs = 10
 num_training = 40000
 num_validation = 3000
 num_testing = 3000
-w, h, d = 32, 32, 3
+w, h, d = 64, 64, 3
 
 
 # %% Creating training, validation and testing sets from the data
@@ -51,7 +54,6 @@ w, h, d = 32, 32, 3
 print("Setting training, validation and testing datasets.")
 
 """
-# train_test_split ?
 X_train =  # image in train_folder                      30000, 128, 128, 3
 Y_train =  # computed value of angle in image name      30000, num_classes
 """
@@ -64,6 +66,7 @@ Y_val =  # computed value of angle in image name        5000, num_classes
 """
 X_val = np.zeros((num_validation, w*h*d)) # 49152))
 Y_val = np.zeros((num_validation, num_classes))
+ 
 """
 X_test =  # image in test_folder                        5000, 128, 128, 3
 Y_test_val =  # computed value of angle in image name   5000, num_classes
@@ -71,6 +74,39 @@ Y_test_val =  # computed value of angle in image name   5000, num_classes
 X_test = np.zeros((num_testing, w*h*d)) # 49152))
 Y_test = np.zeros((num_testing, num_classes))
 
+# %% Functions used
+
+def mask_it(img, mmin, mmax):
+    
+    n_img = img.copy()
+    xm, ym, zm = n_img.shape
+    for x in range(0,xm):
+        for y in range(0,ym):
+            for z in range(0,zm):
+                if n_img[x,y,z] < mmin or n_img[x,y,z] > mmax:
+                    n_img[x,y,z] = 0
+
+    return n_img
+
+def read_and_mask_image(filename):
+    img = plt.imread(filename)
+    m_img = mask_it(img, 150, 256)
+    
+    """
+    plt.figure()
+    plt.imshow(m_img)
+    """
+    return m_img
+    
+def read_from_folder(folder):
+    
+    for subdir, dirs, files in os.walk(folder):
+        for file in files:
+            
+            if (file.endswith('.JPG') or file.endswith('.JPEG') or file.endswith('.jpg') or file.endswith('.jpeg')):
+                print(file)
+                filename = folder + '/' + file
+                _ = read_and_mask_image(filename)
 
 # %% Setting Image files to correct format
 
@@ -79,21 +115,24 @@ print("Generating data from training and testing files.")
 with open(train_file, newline='') as csvfile:
     train_data = list(csv.reader(csvfile))
     
+with open(val_file, newline='') as csvfile:
+    val_data = list(csv.reader(csvfile))
+   
 with open(test_file, newline='') as csvfile:
     test_data = list(csv.reader(csvfile))
-    
+  
 print("\nReading training data. \n")
 cur_imgs = 0
 while cur_imgs < num_training:
     # Read image name / path from given folder
     img_name = train_data[cur_imgs][0]
-    img = imread(img_name)
+    img = plt.imread(img_name)
+    #img = read_and_mask_image(img_name)
     # Resize the image
     img = np.ravel(rescale(img, 1.0 / float(256.0/w), anti_aliasing=False))
     img = img / 255.0
     # Add image data and answer to database
     X_train[cur_imgs] = img
-    # Y_train[cur_imgs][round(float(train_data[cur_imgs][2]))] = 1
     Y_train[cur_imgs] = float(train_data[cur_imgs][2])
     cur_imgs += 1
     if cur_imgs % 100 == 0:
@@ -104,15 +143,15 @@ print("\nReading validation data. \n")
 cur_imgs = 0
 while cur_imgs < num_validation:
     # Read image name / path from given folder
-    img_name = train_data[num_training + cur_imgs][0]
-    img = imread(img_name)
+    img_name = val_data[cur_imgs][0]
+    img = plt.imread(img_name)
+    #img = read_and_mask_image(img_name)
     # Resize the image
     img = np.ravel(rescale(img, 1.0 / float(256.0/w), anti_aliasing=False))
     img = img / 255.0
     # Add image data and answer to database
     X_val[cur_imgs] = img
-    # Y_val[cur_imgs][round(float(train_data[num_training + cur_imgs][2]))] = 1
-    Y_val[cur_imgs] = float(train_data[num_training + cur_imgs][2])
+    Y_val[cur_imgs] = float(val_data[cur_imgs][2])
     cur_imgs += 1
     if cur_imgs % 100 == 0:
         sys.stdout.write("\r" + "Validation data " + str(round(cur_imgs*100 / num_validation,2)) + " % ready.")
@@ -123,22 +162,24 @@ cur_imgs = 0
 while cur_imgs < num_testing:
     # Read image name / path from given folder
     img_name = test_data[cur_imgs][0]
-    img = imread(img_name)
+    img = plt.imread(img_name)
+    #img = read_and_mask_image(img_name)
     # Resize the image
     img = np.ravel(rescale(img, 1.0 / float(256.0/w), anti_aliasing=False))
     img = img / 255.0
     # Add image data and answer to database
     X_test[cur_imgs] = img
-    # Y_test[cur_imgs][round(float(test_data[cur_imgs][2]))] = 1
     Y_test[cur_imgs] = float(test_data[cur_imgs][2])
     cur_imgs += 1
     if cur_imgs % 100 == 0:
         sys.stdout.write("\r" + "Testing data " + str(round(cur_imgs*100 / num_testing,2)) + " % ready.")
         sys.stdout.flush()
 
+# %%
 # Scale angles from -180 deg - 180 deg to [0, 1]
 max_angle = 180
 min_angle = -180
+
 Y_train = (Y_train-min_angle)/(max_angle-min_angle)
 Y_val = (Y_val-min_angle)/(max_angle-min_angle)
 Y_test = (Y_test-min_angle)/(max_angle-min_angle)
@@ -148,32 +189,6 @@ X_val = X_val.reshape((num_validation, w, h, d))
 X_test = X_test.reshape((num_testing, w, h, d))
 
 
-# %% Keras classification model for CNN
-
-"""
-print("\nBuilding Keras classification model.")
-model = Sequential()
-model.add(Reshape((128,128,3), input_shape=(49152,)))
-model.add(Conv2D(32, kernel_size=3, activation='relu', input_shape=(128,128,3)))
-model.add(MaxPooling2D(pool_size=(2,2), strides=None, padding='valid', data_format=None))
-model.add(Conv2D(48, kernel_size=3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2), strides=None, padding='valid', data_format=None))
-model.add(Dropout(0.25))
-model.add(Conv2D(64, kernel_size=3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2), strides=None, padding='valid', data_format=None))
-model.add(Dropout(0.25))
-model.add(Conv2D(96, kernel_size=3, activation='relu'))
-model.add(MaxPooling2D(pool_size=(2,2), strides=None, padding='valid', data_format=None))
-model.add(Flatten())
-model.add(Dense(1024, activation='softmax'))
-model.add(Dense(num_classes, activation='sigmoid'))
- 
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-print("Fitting Keras model") 
-model.fit(X_train, Y_train, validation_data=(X_val, Y_val), epochs=epochs, batch_size=batch_size)
-"""
-
 # %% Keras regression model for CNN
 
 # Create_mlp and create_cnn functions copied from
@@ -182,16 +197,16 @@ model.fit(X_train, Y_train, validation_data=(X_val, Y_val), epochs=epochs, batch
 
 print("\nBuilding Keras regression model.")
 
-def create_mlp(width, height, depth, filters=(16,32), regress=False):
+def create_mlp(width, height, depth, filters=(16,32,64), regress=False):
 
     model = Sequential()
     
     for (i, f) in enumerate(filters):
-        model.add(Conv2D(f, (5, 5), padding="same", activation='relu'))
+        model.add(Conv2D(f, (3, 3), padding="same", activation='relu'))
         model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Flatten())
-    model.add(Dense(40, activation="relu"))
-    model.add(Dense(8, activation="relu"))
+    model.add(Dense(120, activation="relu"))
+    model.add(Dense(36, activation="relu"))
  
     # check to see if the regression node should be added
     if regress:
@@ -199,7 +214,7 @@ def create_mlp(width, height, depth, filters=(16,32), regress=False):
  
     return model
 
-def create_cnn(width, height, depth, filters=(16, 32, 64), regress=False):
+def create_cnn(width, height, depth, filters=(16, 32, 32, 64, 64), regress=False):
     
     # initialize the input shape and channel dimension, assuming
     # TensorFlow/channels-last ordering
@@ -243,7 +258,7 @@ def create_cnn(width, height, depth, filters=(16, 32, 64), regress=False):
     # return the CNN
     return model
 
-model = create_mlp(w, h, d, regress=True) # create_cnn(w, h, d, regress=True)
+model = create_cnn(w, h, d, regress=True) # create_mlp(w, h, d, regress=True)
 opt = Adam(lr=1e-4, decay=1e-4 / 200)
 model.compile(loss='mse', optimizer=opt, metrics=['mse', 'mae'])
 
@@ -277,9 +292,17 @@ model.save(model_path)
 print('Saved trained model at %s ' % model_path)
 
 
-# %% Cheats about model
+# %% Load a model
+
+load_model_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
+load_model_file = 'keras_light_direction_regr_model10.h5'
+model = load_model(load_model_folder + '/' + load_model_file)
+
+# %% Cheats and statistics about model
 
 model.summary()
+
+# %%
 model.get_config()
 model.get_weights()
 
@@ -311,7 +334,12 @@ print('Test accuracy:', training_scores[1])
 
 def evaluate_accuracies(acc_count, sum_angle, est_val, real_val):
     
-    err_val = abs(real_val - est_val)
+    if real_val < -90 and est_val > 90:
+        err_val = abs(real_val + 360 - est_val)
+    elif real_val > 90 and est_val < -90:
+        err_val = abs(est_val + 360 - real_val)
+    else:
+        err_val = abs(real_val - est_val)
     sum_angle += err_val
     
     if err_val < 1:
@@ -326,6 +354,7 @@ def evaluate_accuracies(acc_count, sum_angle, est_val, real_val):
         acc_count[4] += 1
     else:
         acc_count[5] += 1
+        print(est_val, real_val)
         
     return acc_count, sum_angle
 
@@ -336,9 +365,10 @@ def do_tests_test_file(num_tests):
     sum_angle_error = 0
     real_angles = np.zeros(num_tests)
     img_np = np.zeros((num_tests, w, h, d))
+    indices = np.zeros(num_tests)
     
     for i in range(num_tests):
-        index = np.random.randint(num_testing)
+        index = np.random.randint(0,1000)#num_testing)
         imagepath = test_data[index][0]
         # print(imagepath)
         real_angles[i] = (float(test_data[index][2]) - min_angle) / (max_angle - min_angle)
@@ -347,23 +377,28 @@ def do_tests_test_file(num_tests):
         img = rescale(img, 1.0 / float(256.0/w), anti_aliasing=False)
         img = img / 255.0
         img_np[i] = img.reshape((w, h, d))
+        indices[i] = index
         
     # Used only in regression
     # img_np = img_np.reshape((num_tests, 128, 128, 3))
     
     evaluated = model.predict(img_np)
+    last_sum_angle = 0
     
     for i in range(num_tests):
         est_val = evaluated[i] * (max_angle - min_angle) + min_angle
         real_val = (real_angles[i]) * (max_angle - min_angle) + min_angle
         # print('Evaluated:', est_val, ', Real:', real_val)
+        last_sum_angle = float(sum_angle_error)
         accuracies_count, sum_angle_error = evaluate_accuracies(accuracies_count, sum_angle_error, est_val, real_val)
+        if last_sum_angle + 90 < sum_angle_error:
+            print("Over 90 at: ", i)
         
     print("Accuracy count, <1, <5, <10, <30, <90, >90")
     print(accuracies_count)
     print("Average angle error: ", sum_angle_error / num_tests)
     
-    return evaluated
+    return evaluated, indices
 
 
 # Make predictions
@@ -371,11 +406,72 @@ num_tests = 100
 ev = do_tests_test_file(num_tests)
 
 
+# %% Test and visualize a single image and estimated light direction
+
+test_data_index = np.random.randint(0,num_testing)
+sz = 128
+img = plt.imread(test_data[test_data_index][0])
+fig = plt.figure()
+ax = fig.add_subplot(111)
+# Plot the image as background
+ax.imshow(img, extent=[-sz/2,sz/2,-sz/2,sz/2])
+
+img2 = rescale(img, 1.0 / float(256.0/w), anti_aliasing=False)
+img2 = img2 / 255.0
+img2 = img2.reshape((1, w, h, d))
+
+# Compute evaluated angle and get real angle        
+evaluated_angle = model.predict(img2)
+evaluated_angle = evaluated_angle * (max_angle - min_angle) + min_angle
+real_angle = float(test_data[test_data_index][2])
+
+# Prepare x and y vectors to draw
+if evaluated_angle < 90 and evaluated_angle > -90:
+    x_range_e = np.array(range(0, int(sz/2)))
+else:
+    x_range_e = -1 * np.array(range(0, int(sz/2)))
+    
+if real_angle < 90 and real_angle > -90:
+    x_range_r = np.array(range(0, int(sz/2)))  
+else:
+    x_range_r = -1 * np.array(range(0, int(sz/2)))
+
+print("Estimated:", evaluated_angle, "Real:", real_angle)
+y_range_e = np.array(math.tan((evaluated_angle / 180) * math.pi) * (x_range_e-0))
+y_range_r = np.array(math.tan((real_angle / 180) * math.pi) * (x_range_r-0))
+
+for i, y in enumerate(y_range_e):
+    if y > sz / 2:
+        y_range_e[i] = sz/2
+        break
+    elif y < -sz / 2:
+        y_range_e[i] = -sz/2
+        break
+y_range_e = y_range_e[0:i+1]
+x_range_e = x_range_e[0:i+1]
+
+for i, y in enumerate(y_range_r):
+    if y > sz / 2:
+        y_range_r[i] = sz/2
+        break
+    elif y < -sz / 2:
+        y_range_r[i] = -sz/2
+        break
+y_range_r = y_range_r[0:i+1]
+x_range_r = x_range_r[0:i+1]
+    
+# Draw Estimated and Real lines on top of image
+ax.plot(x_range_e, y_range_e, '--', linewidth=3, color='blue', label='Estimated')
+ax.plot(x_range_r, y_range_r, '--', linewidth=3, color='green', label='Real')
+
+ax.legend()
+
+
 # %% Testing on separate real image dataset
 
 def do_tests_single_file(img):
         
-    img = img.reshape(1,-1)
+    # img = img.reshape(1,-1)
     evaluated = model.predict(img)
     val = np.amax(evaluated)
     print('Evaluated:', np.where(evaluated == val),'Percentage:', val)
@@ -389,8 +485,9 @@ def read_files_from_folder(folder):
                 print(file)
                 filename = folder + '/' + file
                 
-                img = imread(filename)
+                img = read_and_mask_image(filename)
                 img = np.ravel(np.resize(img, (w, h, d)))
+                img = img / 255.0
                 do_tests_single_file(img)
   
 """
