@@ -26,27 +26,25 @@ import matplotlib.pyplot as plt
 
 
 # %% Variables and seed
-# Random seed for reproducing
-np.random.seed(8)
 
 print("Setting variables.")
 
-train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train'
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset'#face_test'
-val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val'
-train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train.csv'
-test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/testdata.csv'#face_test.csv'
-val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val.csv'
+train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray'#face_test'
+val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val_gray'
+train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray.csv'
+test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray.csv'#face_test.csv'
+val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val_gray.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-model_name = 'keras_regr_model3.h5'
+model_name = 'keras_regr_model_gray3.h5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
-epochs = 10
-num_training = 40000
-num_validation = 3000
-num_testing = 3000
-w, h, d = 64, 64, 3
+epochs = 35
+num_training = 48000
+num_validation = 5000
+num_testing = 5000
+w, h, d = 128, 128, 1
 
 
 # %% Creating training, validation and testing sets from the data
@@ -176,7 +174,7 @@ while cur_imgs < num_testing:
         sys.stdout.flush()
 
 # %%
-# Scale angles from -180 deg - 180 deg to [0, 1]
+# Scale angles from [-180 deg, 180 deg] to [0, 1]
 max_angle = 180
 min_angle = -180
 
@@ -197,7 +195,7 @@ X_test = X_test.reshape((num_testing, w, h, d))
 
 print("\nBuilding Keras regression model.")
 
-def create_mlp(width, height, depth, filters=(16,32,64), regress=False):
+def create_mlp(width, height, depth, filters=(16,32,48,64), regress=False):
 
     model = Sequential()
     
@@ -205,7 +203,7 @@ def create_mlp(width, height, depth, filters=(16,32,64), regress=False):
         model.add(Conv2D(f, (3, 3), padding="same", activation='relu'))
         model.add(MaxPooling2D(pool_size=(2,2)))
     model.add(Flatten())
-    model.add(Dense(120, activation="relu"))
+    model.add(Dense(300, activation="relu"))
     model.add(Dense(36, activation="relu"))
  
     # check to see if the regression node should be added
@@ -258,7 +256,7 @@ def create_cnn(width, height, depth, filters=(16, 32, 32, 64, 64), regress=False
     # return the CNN
     return model
 
-model = create_cnn(w, h, d, regress=True) # create_mlp(w, h, d, regress=True)
+model = create_mlp(w, h, d, regress=True) # create_mlp(w, h, d, regress=True)
 opt = Adam(lr=1e-4, decay=1e-4 / 200)
 model.compile(loss='mse', optimizer=opt, metrics=['mse', 'mae'])
 
@@ -294,18 +292,21 @@ print('Saved trained model at %s ' % model_path)
 
 # %% Load a model
 
+"""
 load_model_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_model_file = 'keras_light_direction_regr_model10.h5'
+load_model_file = 'keras_regr_model_gray2.h5' # 'keras_light_direction_regr_model10.h5'
 model = load_model(load_model_folder + '/' + load_model_file)
+"""
 
-# %% Cheats and statistics about model
+# %% Statistics about model structure
 
 model.summary()
 
-# %%
+# %% Weights and cofiguration
+"""
 model.get_config()
 model.get_weights()
-
+"""
 
 # %% Visualize training history of a model
 
@@ -368,7 +369,7 @@ def do_tests_test_file(num_tests):
     indices = np.zeros(num_tests)
     
     for i in range(num_tests):
-        index = np.random.randint(0,1000)#num_testing)
+        index = np.random.randint(0,num_testing)
         imagepath = test_data[index][0]
         # print(imagepath)
         real_angles[i] = (float(test_data[index][2]) - min_angle) / (max_angle - min_angle)
@@ -414,9 +415,9 @@ img = plt.imread(test_data[test_data_index][0])
 fig = plt.figure()
 ax = fig.add_subplot(111)
 # Plot the image as background
-ax.imshow(img, extent=[-sz/2,sz/2,-sz/2,sz/2])
+ax.imshow(img, extent=[-sz/2,sz/2,-sz/2,sz/2], cmap='gray')
 
-img2 = rescale(img, 1.0 / float(256.0/w), anti_aliasing=False)
+img2 = rescale(img, 1.0 / float(256.0/w), anti_aliasing=False, anti_aliasing_sigma=None)
 img2 = img2 / 255.0
 img2 = img2.reshape((1, w, h, d))
 
