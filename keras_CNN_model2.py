@@ -13,6 +13,8 @@ from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers.core import Activation, Dropout, Dense # , Reshape
 from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
+from keras import models
 
 import numpy as np
 import os
@@ -36,15 +38,17 @@ train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/fa
 test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray.csv'#face_test.csv'
 val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val_gray.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-model_name = 'keras_regr_model_gray3.h5'
+model_name = 'keras_regr_model_gray4.h5'
+model_checkpoint_name = 'keras_regr_model_gray4_bw.h5'
+model_checkpoint = 'keras_weights.hdf5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
-epochs = 35
+epochs = 20
 num_training = 48000
 num_validation = 5000
 num_testing = 5000
-w, h, d = 128, 128, 1
+w, h, d = 256, 256, 1
 
 
 # %% Creating training, validation and testing sets from the data
@@ -195,7 +199,10 @@ X_test = X_test.reshape((num_testing, w, h, d))
 
 print("\nBuilding Keras regression model.")
 
-def create_mlp(width, height, depth, filters=(16,32,48,64), regress=False):
+checkpointer = ModelCheckpoint(filepath=model_checkpoint, 
+                               monitor = 'val_acc', verbose=1, save_best_only=True)
+
+def create_mlp(width, height, depth, filters=(16,32,48,64,80), regress=False):
 
     model = Sequential()
     
@@ -261,7 +268,7 @@ opt = Adam(lr=1e-4, decay=1e-4 / 200)
 model.compile(loss='mse', optimizer=opt, metrics=['mse', 'mae'])
 
 # Training
-model_history = model.fit(X_train, Y_train, validation_data=(X_val, Y_val), epochs=epochs, batch_size=batch_size)
+model_history = model.fit(X_train, Y_train, validation_data=(X_val, Y_val), epochs=epochs, batch_size=batch_size, callbacks=[checkpointer])
 
 
 # %% Statistical part mean and std
@@ -289,12 +296,20 @@ model_path = os.path.join(save_folder, model_name)
 model.save(model_path)
 print('Saved trained model at %s ' % model_path)
 
+# Load best weights and save model
+if not os.path.isdir(save_folder):
+    os.makedirs(save_folder)
+best_model_path = os.path.join(save_folder, model_checkpoint_name)
+model.load_weights(model_checkpoint)
+model.save(best_model_path)
+print('Saved trained model at %s ' % best_model_path)
+
 
 # %% Load a model
 
 """
 load_model_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_model_file = 'keras_regr_model_gray2.h5' # 'keras_light_direction_regr_model10.h5'
+load_model_file = 'keras_regr_model_gray3.h5' # 'keras_light_direction_regr_model10.h5'
 model = load_model(load_model_folder + '/' + load_model_file)
 """
 
@@ -307,6 +322,55 @@ model.summary()
 model.get_config()
 model.get_weights()
 """
+
+# %% Visualizing intermediate activations of convnet
+
+# This part is mostly copied from https://github.com/gabrielpierobon/cnnshapes/blob/master/README.md
+
+layer_outputs = [layer.output for layer in model.layers[:12]] 
+# Extracts the outputs of the top 12 layers
+activation_model = models.Model(inputs=model.input, outputs=layer_outputs) 
+# Creates a model that will return these outputs, given the model input
+
+activations = activation_model.predict(img) 
+# Returns a list of five Numpy arrays: one array per layer activation
+
+first_layer_activation = activations[0]
+print(first_layer_activation.shape)
+
+plt.matshow(first_layer_activation[0, :, :, 4], cmap='viridis')
+
+
+layer_names = []
+for layer in model.layers[:12]:
+    layer_names.append(layer.name) # Names of the layers, so you can have them as part of your plot
+    
+images_per_row = 16
+
+
+for layer_name, layer_activation in zip(layer_names, activations): # Displays the feature maps
+    n_features = layer_activation.shape[-1] # Number of features in the feature map
+    size = layer_activation.shape[1] #The feature map has shape (1, size, size, n_features).
+    n_cols = n_features // images_per_row # Tiles the activation channels in this matrix
+    display_grid = np.zeros((size * n_cols, images_per_row * size))
+    for col in range(n_cols): # Tiles each filter into a big horizontal grid
+        for row in range(images_per_row):
+            channel_image = layer_activation[0,
+                                             :, :,
+                                             col * images_per_row + row]
+            channel_image -= channel_image.mean() # Post-processes the feature to make it visually palatable
+            channel_image /= channel_image.std()
+            channel_image *= 64
+            channel_image += 128
+            channel_image = np.clip(channel_image, 0, 255).astype('uint8')
+            display_grid[col * size : (col + 1) * size, # Displays the grid
+                         row * size : (row + 1) * size] = channel_image
+    scale = 1. / size
+    plt.figure(figsize=(scale * display_grid.shape[1],
+                        scale * display_grid.shape[0]))
+    plt.title(layer_name)
+    plt.grid(False)
+    plt.imshow(display_grid, aspect='auto', cmap='viridis')
 
 # %% Visualize training history of a model
 
@@ -410,7 +474,7 @@ ev = do_tests_test_file(num_tests)
 # %% Test and visualize a single image and estimated light direction
 
 test_data_index = np.random.randint(0,num_testing)
-sz = 128
+sz = 256
 img = plt.imread(test_data[test_data_index][0])
 fig = plt.figure()
 ax = fig.add_subplot(111)
