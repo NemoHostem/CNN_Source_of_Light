@@ -197,10 +197,58 @@ for factor in np.arange(0.5, 1.2, 0.1):
 	io.imsave('{}/test_4_{:.2f}.jpg'.format(save_folder, factor), image)
 """
 
+      
+# %% Create a random dataset of non-rotated faces with lightning from front
+
+       
+n = 1000
+
+for i in range(n):
+    rand_x = random.randint(-250,250)
+    rand_y = random.randint(-250,250)
+    rand_z = random.randint(50, 500)
+    rand_R = 0.8 + random.random() * 0.2
+    rand_G = 0.8 + random.random() * 0.2
+    rand_B = 0.8 + random.random() * 0.2
+    
+    light_intensities = np.array([[rand_R, rand_G, rand_B]])
+    light_positions = np.array([[rand_x, rand_y, rand_z]])
+    image = light_test(vertices, light_positions, light_intensities) 
+    io.imsave('{}/1_{:0>4d}_{}_{}_{}.jpg'.format(save_folder, i, rand_x, rand_y, rand_z), image)
+    
+    angle = math.atan2(rand_y,rand_x)
+    deg = angle * (180 / math.pi)
+    print("1", i, "/", n, rand_x, rand_y, rand_z, deg)
+    
+
+
+# %% Create a random set of non-rotated faces with lightning from behind
+   
+
+n = 1000
+
+for i in range(n):
+    rand_x = random.randint(-250,250)
+    rand_y = random.randint(-250,250)
+    rand_z = random.randint(-50, 50)
+    rand_R = 0.8 + random.random() * 0.2
+    rand_G = 0.8 + random.random() * 0.2
+    rand_B = 0.8 + random.random() * 0.2
+    
+    light_intensities = np.array([[rand_R, rand_G, rand_B]])
+    light_positions = np.array([[rand_x, rand_y, rand_z]])
+    image = light_test(vertices, light_positions, light_intensities) 
+    io.imsave('{}/2_{:0>4d}_{}_{}_{}.jpg'.format(save_folder, i, rand_x, rand_y, rand_z), image)
+    
+    angle = math.atan2(rand_y,rand_x)
+    deg = angle * (180 / math.pi)
+    print("2", i, "/", n, rand_x, rand_y, rand_z, deg)
+
+    
 
 # %% Create a random dataset of rotated faces with different lightning
 
-"""
+
 obj = {}
 camera = {}
 ### face in reality: ~18cm height/width. set 180 = 18cm. image size: 256 x 256
@@ -242,58 +290,12 @@ for i in range(n):
     light_y = radius * math.sin(theta) * math.sin(phi)
     light_z = radius * math.cos(theta)
     
-    print(rand_x, rand_y, rand_z, rand_pitch, rand_yaw, rand_roll)
+    print("3", i, "/", n, rand_x, rand_y, rand_z, rand_pitch, rand_yaw, rand_roll)
     print("Phi, theta", phi_deg, theta_deg, light_x, light_y, light_z)
     
-"""
-        
-# %% Create a random dataset of non-rotated faces with lightning from front
 
-"""        
-n = 1000
+  
 
-for i in range(n):
-    rand_x = random.randint(-250,250)
-    rand_y = random.randint(-250,250)
-    rand_z = random.randint(50, 500)
-    rand_R = 0.8 + random.random() * 0.2
-    rand_G = 0.8 + random.random() * 0.2
-    rand_B = 0.8 + random.random() * 0.2
-    
-    light_intensities = np.array([[rand_R, rand_G, rand_B]])
-    light_positions = np.array([[rand_x, rand_y, rand_z]])
-    image = light_test(vertices, light_positions, light_intensities) 
-    io.imsave('{}/1_{:0>4d}_{}_{}_{}.jpg'.format(save_folder, i, rand_x, rand_y, rand_z), image)
-    
-    angle = math.atan2(rand_y,rand_x)
-    deg = angle * (180 / math.pi)
-    print(rand_x, rand_y, rand_z, deg)
-    
-"""
-
-# %% Create a random set of non-rotated faces with lightning from behind
-   
-""" 
-n = 1000
-
-for i in range(n):
-    rand_x = random.randint(-250,250)
-    rand_y = random.randint(-250,250)
-    rand_z = random.randint(-50, 50)
-    rand_R = 0.8 + random.random() * 0.2
-    rand_G = 0.8 + random.random() * 0.2
-    rand_B = 0.8 + random.random() * 0.2
-    
-    light_intensities = np.array([[rand_R, rand_G, rand_B]])
-    light_positions = np.array([[rand_x, rand_y, rand_z]])
-    image = light_test(vertices, light_positions, light_intensities) 
-    io.imsave('{}/2_{:0>4d}_{}_{}_{}.jpg'.format(save_folder, i, rand_x, rand_y, rand_z), image)
-    
-    angle = math.atan2(rand_y,rand_x)
-    deg = angle * (180 / math.pi)
-    print(rand_x, rand_y, rand_z, deg)
-"""
-    
 # %% Test of rotation and computed angle
 
 """
@@ -306,11 +308,11 @@ obj['t'] = [0, 0, 0]
 light_intensities = np.array([[1,1,1]])
 light_positions = np.array([[0, 0, 300]])
 image = light_trans_test(vertices, obj, camera, light_positions, light_intensities) 
-io.imsave('{}/test_{}.jpg'.format(save_folder, test_i), image)
+io.imsave('{}/test_4_{}.jpg'.format(save_folder, test_i), image)
 
 angle = math.atan2(rand_y,rand_x)
 deg = angle * (180 / math.pi)
-print(rand_x, rand_y, rand_z, deg)
+print("test 4", rand_x, rand_y, rand_z, deg)
 """
 
 
@@ -364,7 +366,7 @@ for i in range(n):
     phi2 = math.atan2(y, x) * (180 / math.pi)
     theta2 = math.acos(z / radius2) * (180 / math.pi)
     
-    print(pitch, yaw, roll)
+    print("test 5", i, "/", n, pitch, yaw, roll)
     print("Phi, theta", phi2, theta2, "coords", x, y, z)
 
 # %% 

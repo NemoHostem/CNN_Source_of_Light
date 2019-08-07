@@ -150,6 +150,10 @@ def read_values_from_folder(folder, result_file):
         rf.write(data)
     rf.close()
 
-                    
-read_values_from_folder('C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray', 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray.csv')
+# %% Reading data from file and saving to csv file
+                   
+from_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray'
+csv_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray.csv'
+
+read_values_from_folder(from_folder, csv_file)
                 

@@ -42,9 +42,11 @@ def read_from_folder(read_folder, save_folder):
                 
 # %% Reading from file and showing masked image
                 
-save_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray"
+rgb_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train"
+save_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray"
+
 if not os.path.exists(save_folder):
     os.mkdir(save_folder)
 
-read_from_folder("C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset", save_folder)
+read_from_folder(rgb_folder, save_folder)
 # read_from_folder("C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset", save_folder)
