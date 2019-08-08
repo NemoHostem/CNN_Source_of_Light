@@ -31,21 +31,21 @@ import matplotlib.pyplot as plt
 
 print("Setting variables.")
 
-train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray'
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray'#face_test'
-val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val_gray'
-train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray.csv'
-test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_test_gray.csv'#face_test.csv'
-val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_val_gray.csv'
+train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_train_gray'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray'#face_test'
+val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_val_gray'
+train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_train_gray.csv'
+test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray.csv'#face_test.csv'
+val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_val_gray.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-model_name = 'keras_regr_model_gray4.h5'
-model_checkpoint_name = 'keras_regr_model_gray4_bw.h5'
+model_name = 'keras_regr_model_gray5.h5'
+model_checkpoint_name = 'keras_regr_model_gray5_bw.h5'
 model_checkpoint = 'keras_weights.hdf5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
 epochs = 20
-num_training = 48000
+num_training = 20000
 num_validation = 5000
 num_testing = 5000
 w, h, d = 256, 256, 1
@@ -309,7 +309,7 @@ print('Saved trained model at %s ' % best_model_path)
 
 """
 load_model_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_model_file = 'keras_regr_model_gray3.h5' # 'keras_light_direction_regr_model10.h5'
+load_model_file = 'keras_regr_model_gray4.h5' # 'keras_light_direction_regr_model10.h5'
 model = load_model(load_model_folder + '/' + load_model_file)
 """
 
@@ -326,7 +326,7 @@ model.get_weights()
 # %% Visualizing intermediate activations of convnet
 
 # This part is mostly copied from https://github.com/gabrielpierobon/cnnshapes/blob/master/README.md
-
+img = img.reshape((1, w, h, d))
 layer_outputs = [layer.output for layer in model.layers[:12]] 
 # Extracts the outputs of the top 12 layers
 activation_model = models.Model(inputs=model.input, outputs=layer_outputs) 
