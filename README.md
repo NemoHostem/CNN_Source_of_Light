@@ -60,6 +60,9 @@ Sprints of 2-3 weeks were used during the period of development phase. These sub
 - Created a visualization part for testing, which visualizes ground truth and estimated value with image
 
 ### Sprint 5
+- Created a few grayscale models and improved performance a bit
+- Created a test_CNN.py file for large-scale testing
+- Created read_pgm_files.py for making Yale (.pgm) dataset readable
 
 ### Sprint 6
 
