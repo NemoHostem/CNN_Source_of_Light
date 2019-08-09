@@ -17,11 +17,11 @@ import matplotlib.pyplot as plt
 # %% User variables
 
 # Changeable
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/data/ExtendedYaleB/yaleB11'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/data/ExtendedYaleB'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/data/YaleB_gray'
 casc_path = 'C://ProgramData/Anaconda3/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml'
 
-w, h, d = 128, 128, 1
+w, h = 128, 128
 
 # %% Functions
 
@@ -39,8 +39,7 @@ def read_pgm_files_from_folder(test_folder):
             
             if ((file.endswith('.pgm') or file.endswith('.PGM')) and not (file.endswith('Ambient.pgm') or file.endswith('Ambient.PGM'))):
                 print(file)
-                filename = test_folder + '/' + file
-                
+                filename = os.path.join(subdir, file)            
                 test_files.append(filename)
     
     return test_files
@@ -55,16 +54,28 @@ def collect_all_pgms(test_folder, save_folder):
     print("Number of pgm files:", num_test_files)
     
     for i, file in enumerate(test_files, start=1):
-        # visualize_pgm(file)
         print("File", file)
-        _ = detect_face_area(file, casc_path)
+        status, img = detect_face_area(file, casc_path)
+        if status == -1:
+            continue
         """
-        img = detect_face_area(file, casc_path)
-        img = resize_face_img(img, w, h, d)
+        plt.imshow(img, cmap='gray')
+        plt.show()
+        """
+        img = resize_face_img(img, w, h)
+        """
+        plt.imshow(img, cmap='gray')
+        plt.show()
+        """
         img = equalize_img(img, 1)
-        filename = file.split('.')[0] + ".jpg"
-        save_img(filename, img, save_folder)
         """
+        plt.imshow(img, cmap='gray')
+        plt.show()
+        """
+        filename = file.split('.')[0] + ".jpg"
+        filename = filename.split('/')[-1]
+        save_img(filename, img, save_folder)
+
         if i % 10 == 0:
             print("Creating files :", round(((i)*100 / num_test_files),2), "% completed")
 
@@ -99,22 +110,26 @@ def detect_face_area(filename, casc_path=casc_path):
     """
     
     if number_faces == 0:
-        cv2.imshow("Faces not found", img)
-        cv2.waitKey(0)
+        #cv2.imshow("Faces not found", img)
+        #cv2.waitKey(0)
+        
+        return -1, img
     else:
         x, y, w, h = faces[0]
         face_img = img[y:y+h, x:x+w]
-        cv2.imshow("Cropped face", face_img)
-        cv2.waitKey(0)
+        #cv2.imshow("Cropped face", face_img)
+        #cv2.waitKey(0)
     
-    return face_img
+        return 1, face_img
 
 
-def resize_face_img(face_img, w, h, d):
+def resize_face_img(face_img, w, h):
     
+    """
     img = np.array(face_img)
-    img.resize(w,h,d)
-    
+    img = np.resize(img, (w,h))
+    """
+    img = cv2.resize(face_img, (w,h), interpolation = cv2.INTER_AREA)
     return img
 
 
@@ -136,6 +151,9 @@ def rgb2gray(rgb):
 
 def save_img(img_name, img, save_folder):
 
+    print(save_folder)
+    print(img_name)
+    img_name = img_name.split('\\')[-1]
     io.imsave('{}/{}'.format(save_folder, img_name), img)
     
 
