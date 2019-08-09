@@ -23,12 +23,12 @@ import matplotlib.pyplot as plt
 num_testing = 5000
 w, h, d = 128, 128, 3
 
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test'
-test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test.csv'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray'
+test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray.csv'
 save_stats_folder = 'C://Users/Matias Ijäs/Documents/Matias/results'
 angle_stats_file = 'angle_stats.txt'
 load_network_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_network_filename = 'keras_light_direction_regr_model2.h5'
+load_network_filename = 'keras_regr_model_gray5.h5'
 
 # Do not change
 max_angle = 180

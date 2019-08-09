@@ -32,10 +32,10 @@ import matplotlib.pyplot as plt
 print("Setting variables.")
 
 train_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_train_gray'
-test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray'#face_test'
+test_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray'
 val_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_val_gray'
 train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_train_gray.csv'
-test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray.csv'#face_test.csv'
+test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray.csv'
 val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_val_gray.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
 model_name = 'keras_regr_model_gray5.h5'
@@ -44,7 +44,7 @@ model_checkpoint = 'keras_weights.hdf5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
-epochs = 20
+epochs = 40
 num_training = 20000
 num_validation = 5000
 num_testing = 5000
@@ -59,21 +59,21 @@ print("Setting training, validation and testing datasets.")
 X_train =  # image in train_folder                      30000, 128, 128, 3
 Y_train =  # computed value of angle in image name      30000, num_classes
 """
-X_train = np.zeros((num_training, w*h*d)) # 12288 or 49152))
+X_train = np.zeros((num_training, w*h*d))
 Y_train = np.zeros((num_training, num_classes))
 
 """
 X_val =  # image in train_folder                        5000, 128, 128, 3
 Y_val =  # computed value of angle in image name        5000, num_classes
 """
-X_val = np.zeros((num_validation, w*h*d)) # 49152))
+X_val = np.zeros((num_validation, w*h*d))
 Y_val = np.zeros((num_validation, num_classes))
  
 """
 X_test =  # image in test_folder                        5000, 128, 128, 3
 Y_test_val =  # computed value of angle in image name   5000, num_classes
 """
-X_test = np.zeros((num_testing, w*h*d)) # 49152))
+X_test = np.zeros((num_testing, w*h*d))
 Y_test = np.zeros((num_testing, num_classes))
 
 # %% Functions used
@@ -200,12 +200,14 @@ X_test = X_test.reshape((num_testing, w, h, d))
 print("\nBuilding Keras regression model.")
 
 checkpointer = ModelCheckpoint(filepath=model_checkpoint, 
-                               monitor = 'val_acc', verbose=1, save_best_only=True)
+                               monitor = 'val_loss', verbose=1, save_best_only=True)
 
 def create_mlp(width, height, depth, filters=(16,32,48,64,80), regress=False):
 
     model = Sequential()
     
+    model.add(Conv2D(16, (5, 5), padding="same", activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
     for (i, f) in enumerate(filters):
         model.add(Conv2D(f, (3, 3), padding="same", activation='relu'))
         model.add(MaxPooling2D(pool_size=(2,2)))
@@ -264,7 +266,7 @@ def create_cnn(width, height, depth, filters=(16, 32, 32, 64, 64), regress=False
     return model
 
 model = create_mlp(w, h, d, regress=True) # create_mlp(w, h, d, regress=True)
-opt = Adam(lr=1e-4, decay=1e-4 / 200)
+opt = Adam(lr=1e-4, decay=1e-4 / 400)
 model.compile(loss='mse', optimizer=opt, metrics=['mse', 'mae'])
 
 # Training
@@ -325,6 +327,7 @@ model.get_weights()
 
 # %% Visualizing intermediate activations of convnet
 
+"""
 # This part is mostly copied from https://github.com/gabrielpierobon/cnnshapes/blob/master/README.md
 img = img.reshape((1, w, h, d))
 layer_outputs = [layer.output for layer in model.layers[:12]] 
@@ -371,6 +374,7 @@ for layer_name, layer_activation in zip(layer_names, activations): # Displays th
     plt.title(layer_name)
     plt.grid(False)
     plt.imshow(display_grid, aspect='auto', cmap='viridis')
+"""
 
 # %% Visualize training history of a model
 
