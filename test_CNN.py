@@ -28,7 +28,7 @@ test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/fac
 save_stats_folder = 'C://Users/Matias Ijäs/Documents/Matias/results'
 angle_stats_file = 'angle_stats.txt'
 load_network_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_network_filename = 'keras_regr_model_gray5.h5'
+load_network_filename = 'keras_regr_model_gray8_bw.h5'
 
 # Do not change
 max_angle = 180
