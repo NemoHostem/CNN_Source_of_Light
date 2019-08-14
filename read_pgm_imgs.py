@@ -104,7 +104,7 @@ def detect_face_area(filename, casc_path=casc_path):
     """
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255), 2)
     """
     
     if number_faces == 0:
