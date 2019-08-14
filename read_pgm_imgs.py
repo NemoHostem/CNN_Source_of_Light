@@ -88,8 +88,6 @@ def detect_face_area(filename, casc_path=casc_path):
     img = imread(filename)
     face_img = img #cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faceCascade = cv2.CascadeClassifier(casc_path)
-    print(casc_path)
-    print(os.path.exists(casc_path))
     
     # Detect faces in the image
     faces = faceCascade.detectMultiScale(
@@ -151,8 +149,6 @@ def rgb2gray(rgb):
 
 def save_img(img_name, img, save_folder):
 
-    print(save_folder)
-    print(img_name)
     img_name = img_name.split('\\')[-1]
     io.imsave('{}/{}'.format(save_folder, img_name), img)
     

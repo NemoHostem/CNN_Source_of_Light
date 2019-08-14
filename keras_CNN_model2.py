@@ -38,17 +38,17 @@ train_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/fa
 test_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_test_gray.csv'
 val_file = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_PV_val_gray.csv'
 save_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-model_name = 'keras_regr_model_gray5.h5'
-model_checkpoint_name = 'keras_regr_model_gray5_bw.h5'
+model_name = 'keras_regr_model_gray9.h5'
+model_checkpoint_name = 'keras_regr_model_gray9_bw.h5'
 model_checkpoint = 'keras_weights.hdf5'
 
 batch_size = 64
 num_classes = 1 # 360 if using classification, 1 if using regression
-epochs = 40
+epochs = 100
 num_training = 20000
 num_validation = 5000
 num_testing = 5000
-w, h, d = 256, 256, 1
+w, h, d = 128, 128, 1
 
 
 # %% Creating training, validation and testing sets from the data
@@ -311,7 +311,7 @@ print('Saved trained model at %s ' % best_model_path)
 
 """
 load_model_folder = 'C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/network'
-load_model_file = 'keras_regr_model_gray4.h5' # 'keras_light_direction_regr_model10.h5'
+load_model_file = 'keras_regr_model_gray6.h5' # 'keras_light_direction_regr_model10.h5'
 model = load_model(load_model_folder + '/' + load_model_file)
 """
 
