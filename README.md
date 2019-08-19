@@ -65,5 +65,7 @@ Sprints of 2-3 weeks were used during the period of development phase. These sub
 - Created read_pgm_files.py for making Yale (.pgm) dataset readable
 
 ### Sprint 6
-
+- Commented most important code blocks and removed redundant code
+- Created a predict tool for only predicting estimated angle of given image
+- Implemented a face detection tool into my environment
 
