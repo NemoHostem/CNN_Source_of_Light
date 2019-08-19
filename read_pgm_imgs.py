@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Aug  9 09:36:57 2019
+Last Modified on Mon Aug 19 14:59 2019
 
 @author: Matias Ijäs
+
+This script reads .pgm files from given folder, detects faces from them and scales face images into 128,128,1
+grayscale images. Then the script saves those files into given folder.
+Script uses Haar Cascade frontal face default as a basic structure of a recognizable face. 
 """
 
 # %% Imports
@@ -100,12 +105,6 @@ def detect_face_area(filename, casc_path=casc_path):
     
     number_faces = len(faces)
     print("Found {0} faces!".format(number_faces))
-
-    """
-    # Draw a rectangle around the faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (255), 2)
-    """
     
     if number_faces == 0:
         #cv2.imshow("Faces not found", img)
@@ -123,10 +122,6 @@ def detect_face_area(filename, casc_path=casc_path):
 
 def resize_face_img(face_img, w, h):
     
-    """
-    img = np.array(face_img)
-    img = np.resize(img, (w,h))
-    """
     img = cv2.resize(face_img, (w,h), interpolation = cv2.INTER_AREA)
     return img
 

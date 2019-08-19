@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri May 24 13:09:52 2019
-Last Modified on Fri May 24 14:30:00 2019
+Last Modified on Mon Aug 19 13:39 2019
 
 @author: Matias Ijäs
+
+This script loops through all .jpg and .png files from given folder.
+Then the script prints out exif data (latitude, longitude, date and time of image)
 """
 
 import os

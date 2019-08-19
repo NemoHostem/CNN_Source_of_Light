@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jul 26 10:32:49 2019
+Last Modified on Mon Aug 19 14:48 2019
 
 @author: Matias Ijäs
+
+This file creates a grayscale dataset from RGB dataset.
+Each image file in the folder is transformed to grayscale with matlab standard weights.
+User can determine the save folder, where all grayscale images will be saved.
 """
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
 import numpy as np
 from skimage import io
 
+rgb_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train"
+save_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray"
 
 # %% Functions
 
@@ -41,12 +48,8 @@ def read_from_folder(read_folder, save_folder):
                 io.imsave('{}/{}'.format(save_folder, file), m_img)
                 
 # %% Reading from file and showing masked image
-                
-rgb_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train"
-save_folder = "C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/face_train_gray"
 
 if not os.path.exists(save_folder):
     os.mkdir(save_folder)
 
 read_from_folder(rgb_folder, save_folder)
-# read_from_folder("C://Users/Matias Ijäs/Documents/Matias/face3d/examples/results/facetestset", save_folder)

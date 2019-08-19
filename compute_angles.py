@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun  3 14:14:11 2019
-Last Modified on Mon Jun  3 16:25:01 2019
+Last Modified on Mon Aug 19 14:46 2019
 
 @author: Matias Ijäs
+
+This file computes radius and angles theta and phi for light direction in 2D image
+from face3D generated images. Theta is used for estimating light direction in 2D space
+and phi evaluates angle from 3D space to 2D surface.
+
+The passport photos use the first standard function
+The "twisted heads" use the second standard function
 """
 
 import os

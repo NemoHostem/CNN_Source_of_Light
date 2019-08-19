@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Aug 14 14:18:16 2019
+Last Modified on Mon Aug 19 15:00 2019
 
 @author: Matias Ijäs
+
+This script demonstrates FaceDetect algorithm by applying it into my environment
+This detect faces from images and draws a rectangle around the face.
 """
 
 import cv2

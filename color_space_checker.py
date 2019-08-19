@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed May 29 10:47:33 2019
-Last Modified on TODO
+Last Modified on Mon Aug 19 13:46 2019
 
 @author: Matias Ijäs
+
+This script is used to create a filtered dataset out from RBG images.
+All pixels with 8-bit values less than 150 will be set to 0.
+This way only the brightest parts are visible and light direction could be seen more easily with human eyes.
 """
 
 import matplotlib.pyplot as plt

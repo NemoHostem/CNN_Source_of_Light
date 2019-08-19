@@ -1,6 +1,6 @@
 """
 Created on Tue May 28 08:32:02 2019
-Last Modified on May 31 10:03:05 2019
+Last Modified on Mon Aug 19 13:40 2019
 
 @author: Matias Ijäs
 
@@ -10,6 +10,8 @@ This code is used to create a face dataset with single face 3d model and differe
 
 You need to download YadiraF's face3d from github,
 then add this file to face3d/examples
+OR
+put YadiraF's face3d to the same folder than your Python .exe file
 
 Depending on your libraries, you might need to use mesh_numpy in every part of face3d and change
 original face3d imports such as line 27 in this file:

@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jul 15 08:21:40 2019
-Last Modified on Tue Jul 16 08:22:11 2019
+Last Modified on Mon Aug 19 14:51 2019
 
 @author: Matias Ijäs
+
+This file reads training, validation and testing data
+Then trains a CNN network with training data (and validates with validation data).
+Tests network with test data, visualises network structure and training progress
+Saves the network, Can visualize layer activations
+Visualises errors in single images, calculates average error per 100 random test samples
+and can test with single image from unknown source
 """
 
 # %% Imports

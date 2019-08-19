@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Aug  8 12:36:50 2019
+Last Modified on Mon Aug 19 14:56 2019
 
 @author: Matias Ijäs
+
+Tests already trained CNN weights with test_data
+The file evaluates networks performance by testing with 1000 random samples and
+whole test set. The file saves average angle error, error division to a angle_stats_file
+This script also visualises and saves error divisions of a network
+Single image from test data can be visualised and estimated with this file.
 """
 
 # %% Imports

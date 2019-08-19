@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Aug 14 14:43:22 2019
+Last Modified on Mon Aug 19 15:02 2019
 
 @author: Matias Ijäs
+
+This predicts a light direction angle from given image file
+It uses existing network and visualises image after detection.
+It is possible to analyze all image files from given folder.
 """
 
 # %% Imports

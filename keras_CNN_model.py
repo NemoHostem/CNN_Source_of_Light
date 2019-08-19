@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun  3 10:01:40 2019
-Last Modified on Tue Jun  25 08:22:11 2019
+Last Modified on Mon Aug 19 14:32 2019
 
 @author: Matias Ijäs
+
+This file reads training, validation and testing data
+Then trains a CNN network with training data (and validates with validation data).
+Tests network with test data, visualises network structure and training progress
+Saves the network
+Visualises errors in single images, calculates average error per 100 random test samples
+and can test with single image from unknown source
+
+You should use keras_CNN_model2.py instead.
 """
 
 # %% Imports
