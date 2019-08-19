@@ -9,8 +9,12 @@ import cv2
 from imageio import imread
 import matplotlib.pyplot as plt
 
+# %% Variables
+
 file = 'C://Users/Matias Ijäs/Documents/Matias/data/ExtendedYaleB/yaleB16/yaleB16_P01A+000E+45.pgm'
 casc_path = 'C://ProgramData/Anaconda3/Lib/site-packages/cv2/data/haarcascade_frontalface_default.xml'
+
+# %% Functions
 
 def detect_face_area(filename, casc_path=casc_path):
     
@@ -41,6 +45,8 @@ def detect_face_area(filename, casc_path=casc_path):
     """
     
     return img
+
+# %% Script
 
 img_orig = imread(file)
 img_highlighted = detect_face_area(file, casc_path)
