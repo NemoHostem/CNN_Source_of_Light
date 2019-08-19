@@ -142,7 +142,7 @@ def visualize_input_img(test_file):
     ax.plot(x_range_e, y_range_e, '--', linewidth=3, color='blue', label='Estimated')
     
     ax.legend()
-    plt.figure()
+    plt.show()
     
 # %% Load existing model
 
@@ -161,4 +161,4 @@ visualize_input_img(test_file)
 
 # %% Choose a file from folder
 
-read_files_from_folder(test_folder)
+#read_files_from_folder(test_folder)
