@@ -25,17 +25,22 @@ Mandatory and optional softwares and Python packages are listed below.
 ### Software environment
 - [Python 3.7](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/downloads)
+- [Spyder](https://www.spyder-ide.org/)
 
 ### Python packages
 - [Keras](https://keras.io/)
 - [Tensorflow](https://www.tensorflow.org/)
 - [Numpy](https://www.numpy.org/)
+- [Scipy](https://www.scipy.org/)
 - [Matplotlib](https://matplotlib.org/)
 - [imageio](https://pypi.org/project/imageio/)
+- [cv2 (opencv-python)](https://pypi.org/project/opencv-python/)
+- [skimage (scikit-image)](https://scikit-image.org/)
+- [csv](https://docs.python.org/3/library/csv.html)
 
 ### Optional
-- [Spyder](https://www.spyder-ide.org/)
 - [Face3D](https://github.com/YadiraF/face3d)
+- [Random2](https://pypi.org/project/random2/)
 
 ## Phases / Updates
 Sprints of 2-3 weeks were used during the period of development phase. These subsection are only about development of code, excluding theoretical parts that are studied and written in M.Sc thesis.
